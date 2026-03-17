@@ -22,3 +22,4 @@ El objetivo del proyecto es aplicar los conocimientos adquiridos durante el curs
 ---
 
 ## Link de Notion
+https://www.notion.so/Plantilla-de-cronograma-por-sprints-80ee5a18f7c34f3684ec4969064eb55c?source=copy_link
