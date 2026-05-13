@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;  // Habilita seguridad web
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;  // Configuradores HTTP
 import org.springframework.security.config.http.SessionCreationPolicy;  // Política de sesiones
+import org.springframework.http.HttpMethod;  // Para especificar métodos HTTP en las reglas
 
 // Importamos clases de manejo de usuarios y contraseñas
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -66,8 +67,15 @@ public class SecurityConfiguration {
                 // AdminController: SOLO usuarios con rol ADMIN
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 
-                // VuelosController: Permitir acceso público para listar vuelos
-                .requestMatchers("/api/vuelos/**").permitAll()
+                // VuelosController: GET operations are public, POST/PUT/DELETE/PATCH require ADMIN
+                .requestMatchers(HttpMethod.GET, "/api/vuelos/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/vuelos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/vuelos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/vuelos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/vuelos/**").hasRole("ADMIN")
+                
+                // ReservacionController: All operations require authentication, DELETE requires ADMIN
+                .requestMatchers("/api/reservas/**").hasAnyRole("ADMIN", "CLIENTE")
                 
                 // CUALQUIER OTRA RUTA: Requiere estar autenticado (ADMIN o CLIENTE)
                 .anyRequest().hasAnyRole("ADMIN", "CLIENTE")

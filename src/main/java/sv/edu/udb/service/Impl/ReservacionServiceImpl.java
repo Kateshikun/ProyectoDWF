@@ -1,7 +1,6 @@
 package sv.edu.udb.service.Impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sv.edu.udb.dto.request.ReservacionDTO;
@@ -12,7 +11,6 @@ import sv.edu.udb.repository.ReservacionRepository;
 import sv.edu.udb.service.ReservacionService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +55,23 @@ public class ReservacionServiceImpl implements ReservacionService {
         // Establecer estado inicial si no está definido
         if (reservacion.getEstado_reserva() == null || reservacion.getEstado_reserva().isEmpty()) {
             reservacion.setEstado_reserva("Pendiente");
+        }
+        
+        // Validar que el asiento no esté ya ocupado para este vuelo
+        if (reservacionDTO.getAsientoAsignado() != null && !reservacionDTO.getAsientoAsignado().trim().isEmpty()) {
+            List<Reservacion> reservacionesExistentes = reservacionRepository
+                    .buscarAsientoOcupado(
+                            reservacionDTO.getIdVuelo(), 
+                            reservacionDTO.getAsientoAsignado(), 
+                            "Cancelada"
+                    );
+            
+            if (!reservacionesExistentes.isEmpty()) {
+                System.out.println("Intento de asignar asiento ya ocupado: " + reservacionDTO.getAsientoAsignado() + 
+                        " para vuelo ID: " + reservacionDTO.getIdVuelo());
+                throw new IllegalArgumentException("El asiento " + reservacionDTO.getAsientoAsignado() + 
+                        " ya está ocupado en este vuelo");
+            }
         }
         
         Reservacion reservacionGuardada = reservacionRepository.save(reservacion);

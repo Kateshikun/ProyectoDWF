@@ -198,13 +198,6 @@ public class VueloServiceImpl implements VueloService {
                 // Datos del avión
                 .id_avion(vuelo.getAvion() != null ? vuelo.getAvion().getId_avion() : null)
                 .capacidad_pasajeros(vuelo.getAvion() != null ? vuelo.getAvion().getCapacidad_pasajeros() : null)
-                // Datos de la aerolínea
-                .id_aerolinea(vuelo.getAvion() != null && vuelo.getAvion().getAerolinea() != null 
-                        ? vuelo.getAvion().getAerolinea().getIdAerolinea() : null)
-                .nombre_aerolinea(vuelo.getAvion() != null && vuelo.getAvion().getAerolinea() != null 
-                        ? vuelo.getAvion().getAerolinea().getNombre() : null)
-                .codigo_icao(vuelo.getAvion() != null && vuelo.getAvion().getAerolinea() != null 
-                        ? vuelo.getAvion().getAerolinea().getCodigo_icao() : null)
                 // Datos del vuelo
                 .fecha_salida(vuelo.getFecha_salida())
                 .fecha_llegada(vuelo.getFecha_llegada())

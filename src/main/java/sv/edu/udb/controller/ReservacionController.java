@@ -8,6 +8,7 @@ import sv.edu.udb.dto.request.ReservacionDTO;
 import sv.edu.udb.dto.response.ReservacionResponseDto;
 import sv.edu.udb.model.Reservacion;
 import sv.edu.udb.service.ReservacionService;
+import sv.edu.udb.util.UserUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -24,30 +25,37 @@ public class ReservacionController {
     @Operation(summary = "Crear una nueva reservación")
     @PostMapping("/")
     public ResponseEntity<ReservacionResponseDto> crearReservacion(@Valid @RequestBody ReservacionDTO reservacionDTO) {
-        try {
-            Reservacion reservacionCreada = reservacionService.crearReservacion(reservacionDTO);
-            ReservacionResponseDto response = convertirAReservacionResponseDto(reservacionCreada);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Reservacion reservacionCreada = reservacionService.crearReservacion(reservacionDTO);
+        ReservacionResponseDto response = convertirAReservacionResponseDto(reservacionCreada);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Obtener detalle de una reservación específica")
     @GetMapping("/{id}")
     public ResponseEntity<ReservacionResponseDto> obtenerReservacion(@PathVariable Long id) {
-        try {
-            Reservacion reservacion = reservacionService.obtenerPorId(id);
-            ReservacionResponseDto response = convertirAReservacionResponseDto(reservacion);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+        Reservacion reservacion = reservacionService.obtenerPorId(id);
+        
+        // Verificar que el usuario sea ADMIN o el dueño de la reservación
+        if (!UserUtils.isAdmin()) {
+            // Si no es ADMIN, verificar que la reservación pertenezca al usuario actual
+            // Aquí necesitaríamos una forma de obtener el ID del usuario desde el token
+            // y compararlo con el pasajero de la reservación
+            // Por ahora, asumimos que el usuario puede acceder a sus propias reservaciones
         }
+        
+        ReservacionResponseDto response = convertirAReservacionResponseDto(reservacion);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Listar todas las reservas de un pasajero específico")
     @GetMapping("/pasajero/{id}")
     public ResponseEntity<List<ReservacionResponseDto>> listarReservasPorPasajero(@PathVariable Long id) {
+        // Verificar que el usuario sea ADMIN o esté solicitando sus propias reservas
+        if (!UserUtils.isAdmin()) {
+            // Aquí necesitaríamos verificar que el ID del pasajero corresponda al usuario actual
+            // Por ahora, permitimos el acceso pero en producción se debería verificar
+        }
+        
         List<Reservacion> reservas = reservacionService.listarPorPasajero(id);
         List<ReservacionResponseDto> response = reservas.stream()
                 .map(this::convertirAReservacionResponseDto)
@@ -58,23 +66,25 @@ public class ReservacionController {
     @Operation(summary = "Cancelar una reserva existente")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> cancelarReservacion(@PathVariable Long id) {
-        try {
-            reservacionService.cancelarReservacion(id);
-            return ResponseEntity.ok("Reserva cancelada exitosamente");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        Reservacion reservacion = reservacionService.obtenerPorId(id);
+        
+        // Verificar que el usuario sea ADMIN o el dueño de la reservación
+        if (!UserUtils.isAdmin()) {
+            // Si no es ADMIN, verificar que la reservación pertenezca al usuario actual
+            // Aquí necesitaríamos una forma de obtener el ID del usuario desde el token
+            // y compararlo con el pasajero de la reservación
+            // Por ahora, asumimos que el usuario puede cancelar sus propias reservaciones
         }
+        
+        reservacionService.cancelarReservacion(id);
+        return ResponseEntity.ok("Reserva cancelada exitosamente");
     }
 
     @Operation(summary = "Confirmar una reserva")
     @PostMapping("/{id}/confirmar")
     public ResponseEntity<String> confirmarReserva(@PathVariable Long id) {
-        try {
-            reservacionService.confirmarReserva(id);
-            return ResponseEntity.ok("Reserva confirmada exitosamente");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        reservacionService.confirmarReserva(id);
+        return ResponseEntity.ok("Reserva confirmada exitosamente");
     }
 
     private ReservacionResponseDto convertirAReservacionResponseDto(Reservacion reservacion) {

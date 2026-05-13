@@ -44,24 +44,16 @@ public class VueloController {
     @Operation(summary = "Obtener detalle de un vuelo específico")
     @GetMapping("/{id}")
     public ResponseEntity<VueloResponseDto> obtenerVuelo(@PathVariable Long id) {
-        try {
-            VueloResponseDto vuelo = vueloService.obtenerPorId(id);
-            return ResponseEntity.ok(vuelo);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        VueloResponseDto vuelo = vueloService.obtenerPorId(id);
+        return ResponseEntity.ok(vuelo);
     }
 
     @Operation(summary = "Crear un nuevo vuelo")
     @PostMapping("/")
     public ResponseEntity<VueloResponseDto> crearVuelo(@Valid @RequestBody VueloDto vueloDto) {
-        try {
-            Vuelo vueloCreado = vueloService.guardar(vueloDto);
-            VueloResponseDto response = convertirAVueloResponseDto(vueloCreado);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Vuelo vueloCreado = vueloService.guardar(vueloDto);
+        VueloResponseDto response = convertirAVueloResponseDto(vueloCreado);
+        return ResponseEntity.ok(response);
     }
 
     private VueloResponseDto convertirAVueloResponseDto(Vuelo vuelo) {
@@ -70,8 +62,16 @@ public class VueloController {
                 .id_ruta(vuelo.getRuta() != null ? vuelo.getRuta().getId_ruta() : null)
                 .origen(vuelo.getRuta() != null && vuelo.getRuta().getOrigen() != null ? 
                         vuelo.getRuta().getOrigen().getNombre() : null)
+                .ciudad_origen(vuelo.getRuta() != null && vuelo.getRuta().getOrigen() != null ? 
+                        vuelo.getRuta().getOrigen().getCiudad() : null)
+                .pais_origen(vuelo.getRuta() != null && vuelo.getRuta().getOrigen() != null ? 
+                        vuelo.getRuta().getOrigen().getPais() : null)
                 .destino(vuelo.getRuta() != null && vuelo.getRuta().getDestino() != null ? 
                         vuelo.getRuta().getDestino().getNombre() : null)
+                .ciudad_destino(vuelo.getRuta() != null && vuelo.getRuta().getDestino() != null ? 
+                        vuelo.getRuta().getDestino().getCiudad() : null)
+                .pais_destino(vuelo.getRuta() != null && vuelo.getRuta().getDestino() != null ? 
+                        vuelo.getRuta().getDestino().getPais() : null)
                 .distancia_km(vuelo.getRuta() != null ? vuelo.getRuta().getDistancia_km() : null)
                 .id_avion(vuelo.getAvion() != null ? vuelo.getAvion().getId_avion() : null)
                 .capacidad_pasajeros(vuelo.getAvion() != null ? vuelo.getAvion().getCapacidad_pasajeros() : null)
@@ -86,12 +86,8 @@ public class VueloController {
     @Operation(summary = "Eliminar un vuelo")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarVuelo(@PathVariable Long id) {
-        try {
-            vueloService.eliminar(id);
-            return ResponseEntity.ok("Vuelo eliminado exitosamente");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        vueloService.eliminar(id);
+        return ResponseEntity.ok("Vuelo eliminado exitosamente");
     }
 
     @Operation(summary = "Actualizar estado de un vuelo")
@@ -99,12 +95,7 @@ public class VueloController {
     public ResponseEntity<String> actualizarEstadoVuelo(
             @PathVariable Long id,
             @RequestParam String estado) {
-
-        try {
-            vueloService.actualizarEstado(id, estado);
-            return ResponseEntity.ok("Estado del vuelo actualizado correctamente");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        vueloService.actualizarEstado(id, estado);
+        return ResponseEntity.ok("Estado del vuelo actualizado correctamente");
     }
 }

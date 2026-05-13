@@ -32,11 +32,6 @@ public class VueloResponseDto {
     private Long id_avion;
     private Integer capacidad_pasajeros;
     
-    // Datos de la aerolínea
-    private Long id_aerolinea;
-    private String nombre_aerolinea;
-    private String codigo_icao;
-    
     // Datos del vuelo
     private LocalDateTime fecha_salida;
     private LocalDateTime fecha_llegada;

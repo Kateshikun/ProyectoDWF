@@ -26,4 +26,18 @@ public interface ReservacionRepository extends JpaRepository<Reservacion, Long> 
            "GROUP BY v.ruta.origen, v.ruta.destino " +
            "ORDER BY cantidad DESC")
     List<Object[]> obtenerVuelosMasDemandados();
+    
+    /**
+     * Busca reservaciones para un vuelo específico con un asiento asignado
+     * excluyendo reservaciones canceladas
+     */
+    @Query("SELECT r FROM Reservacion r WHERE r.vuelo.id_vuelo = :idVuelo " +
+            "AND r.asiento_asignado = :asiento " +
+            "AND r.estado_reserva <> :estado")
+    List<Reservacion> buscarAsientoOcupado(
+            @Param("idVuelo") Long idVuelo,
+            @Param("asiento") String asiento,
+            @Param("estado") String estado
+    );
 }
+

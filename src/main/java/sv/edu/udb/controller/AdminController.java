@@ -68,11 +68,7 @@ public class AdminController {
     @Operation(summary = "Actualizar datos de un usuario")
     @PutMapping("/usuarios/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
-        try {
-            Usuario usuarioActualizado = usuarioService.actualizar(id, usuarioDTO);
-            return ResponseEntity.ok(usuarioActualizado);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Usuario usuarioActualizado = usuarioService.actualizar(id, usuarioDTO);
+        return ResponseEntity.ok(usuarioActualizado);
     }
 }
