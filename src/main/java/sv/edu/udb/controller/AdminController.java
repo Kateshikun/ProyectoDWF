@@ -2,7 +2,7 @@ package sv.edu.udb.controller;
 
 import jakarta.validation.Valid;
 import sv.edu.udb.dto.request.UsuarioDTO;
-import sv.edu.udb.model.Usuario;
+import sv.edu.udb.dto.response.UsuarioResponse;
 import sv.edu.udb.service.ReporteService;
 import sv.edu.udb.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
-@Tag(name = "Administración", description = "Endpoints exclusivos para el rol de Administrador")
+@Tag(name = "Administracion", description = "Endpoints exclusivos para el rol de Administrador")
 public class AdminController {
 
     @Autowired
@@ -23,7 +24,6 @@ public class AdminController {
 
     @Autowired
     private UsuarioService usuarioService;
-
 
     @Operation(summary = "Obtener el total de ingresos generados por ventas")
     @GetMapping("/reportes/ingresos")
@@ -44,31 +44,35 @@ public class AdminController {
         return ResponseEntity.ok(reporteService.contarReservasTotales());
     }
 
-    //Gestion de usuarios
+    @Operation(summary = "Listar todos los usuarios")
+    @GetMapping("/usuarios")
+    public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
+        return ResponseEntity.ok(usuarioService.listarTodos());
+    }
 
-    @Operation(summary = "Cambiar el estado (activar/desactivar) de un usuario")
+    @Operation(summary = "Obtener un usuario por ID")
+    @GetMapping("/usuarios/{id}")
+    public ResponseEntity<UsuarioResponse> obtenerUsuario(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.obtenerPorId(id));
+    }
+
+    @Operation(summary = "Cambiar el estado de un usuario")
     @PatchMapping("/usuarios/{id}/estado")
-    public ResponseEntity<String> cambiarEstadoUsuario(
-            @PathVariable Long id,
-            @RequestParam boolean activo) {
-
+    public ResponseEntity<String> cambiarEstadoUsuario(@PathVariable Long id, @RequestParam boolean activo) {
         usuarioService.cambiarEstadoUsuario(id, activo);
-        String mensaje = activo ? "Usuario activado exitosamente" : "Usuario desactivado exitosamente";
-        return ResponseEntity.ok(mensaje);
+        return ResponseEntity.ok(activo ? "Usuario activado exitosamente" : "Usuario desactivado exitosamente");
     }
 
     @Operation(summary = "Eliminar un usuario del sistema")
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable Long id) {
-        // Asumiendo que agregas este método en tu IUsuarioService
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.ok("Usuario eliminado correctamente");
     }
 
     @Operation(summary = "Actualizar datos de un usuario")
     @PutMapping("/usuarios/{id}")
-    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
-        Usuario usuarioActualizado = usuarioService.actualizar(id, usuarioDTO);
-        return ResponseEntity.ok(usuarioActualizado);
+    public ResponseEntity<UsuarioResponse> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+        return ResponseEntity.ok(usuarioService.actualizar(id, usuarioDTO));
     }
 }

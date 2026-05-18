@@ -9,6 +9,7 @@ public interface ReservacionService {
     Reservacion crearReservacion(ReservacionDTO reservacionDTO);
     Reservacion obtenerPorId(Long id);
     List<Reservacion> listarPorPasajero(Long idPasajero);
+    List<Reservacion> listarTodas();
     void cancelarReservacion(Long id);
     void confirmarReserva(Long idReservacion);
 }
