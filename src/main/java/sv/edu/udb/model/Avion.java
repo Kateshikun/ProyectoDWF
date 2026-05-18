@@ -1,5 +1,6 @@
 package sv.edu.udb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -22,9 +23,9 @@ public class Avion {
     @Column(nullable = false)
     private Integer capacidad_pasajeros;
 
-
     @NotNull(message = "Debe asignar una aerolínea al avión")
-    @ManyToOne(fetch = FetchType.LAZY) //Solo se cargara cuando se use
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_aerolinea", nullable = false)
+    @JsonIgnore
     private Aerolinea aerolinea;
 }

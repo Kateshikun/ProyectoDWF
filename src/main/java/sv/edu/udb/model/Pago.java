@@ -20,7 +20,7 @@ public class Pago {
     @Column(name = "id_pago")
     private Long idPago;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_reservacion")
     private Reservacion reservacion;
 

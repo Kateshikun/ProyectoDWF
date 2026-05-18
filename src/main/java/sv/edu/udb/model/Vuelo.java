@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import sv.edu.udb.model.enums.EstadoVuelo;
 
 import java.time.LocalDateTime;
 
@@ -20,11 +21,11 @@ public class Vuelo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_vuelo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_ruta")
     private Ruta ruta;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_avion")
     private Avion avion;
 
@@ -35,7 +36,9 @@ public class Vuelo {
     @NotNull
     private LocalDateTime fecha_llegada;
 
-    private String estado; // Programado, Retrasado, Cancelado
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private EstadoVuelo estado;
 
     @NotBlank(message = "Debe asignar un piloto")
     private String nombre_piloto;
